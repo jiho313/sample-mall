@@ -34,7 +34,7 @@ public class UserDao {
 			while(rs.next()) {
 				user = new User();
 				user.setNo(rs.getInt("user_no"));
-				user.setId(rs.getString("user_id"));
+				user.setId(rs.getString("user_name"));
 				user.setPassword(rs.getString("user_password"));
 				user.setName(rs.getString("user_name"));
 				user.setPoint(rs.getInt("user_point"));

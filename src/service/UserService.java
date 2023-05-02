@@ -67,4 +67,27 @@ public class UserService {
 		return new LoginUser(savedUser.getNo(), savedUser.getId(), savedUser.getName());
 	}
 	
+	/*
+	 * 사용자 상세 정보를 제공하는 서비스
+	 * 
+	 * 반환타입: User
+	 * 메서드명: getUserDetail
+	 * 매개변수: String userId
+	 * 업무로직
+	 * 	- 사용자 아이디를 전달받아서 사용자 아이디에 해당하는 사용자 정보를 반환한다.
+	 * 	- 1. 사용자 정보 조회하기
+	 * 		- UserDao객체의 getUserById()메서드를 호출해서 아이디로 사용자 정보를 조회한다.
+	 * 		- 사용자 정보가 존재하지 않으면 예외를 던진다.	
+	 * - 2. 사용자 정보 반환하기
+	 * 		- 1번에서 조회된 사용자 정보를 반환한다.
+	 * 
+	 */
+	public User gerUserDetail(String userId) {
+		User savedUser = userDao.getUserById(userId);
+		if (savedUser == null) {
+			throw new RuntimeException("사용자 정보가 존재하지 않습니다.");
+		}
+		return savedUser;
+	}
 }
+

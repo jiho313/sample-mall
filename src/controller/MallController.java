@@ -224,6 +224,15 @@ public class MallController {
 	private void 내정보보기() {
 		System.out.println("<< 내 정보 보기 >>");
 		
+		User user = userService.gerUserDetail(loginUser.getId());
+		System.out.println("### 사용자 정보를 확인하세요.");
+		System.out.println("----------------------------------------");
+		System.out.println("사용자 번호: " + user.getNo());
+		System.out.println("사용자 아이디: " + user.getId());
+		System.out.println("사용자 이름: " + user.getName());
+		System.out.println("사용자 포인트: " + user.getPoint());
+		System.out.println("가입일자: " + user.getCreateDate());
+		
 	}
 	
 	private void 상품조회() {
