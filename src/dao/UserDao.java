@@ -10,6 +10,35 @@ import vo.User;
 
 public class UserDao {
 	
+	public User getUserByNo(int userNo) {
+		String sql = "select * "
+				+ "from sample_users "
+				+ "where user_no= ?";
+		try {
+			User user = null;
+			
+			Connection conn = ConnUtils.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, userNo);
+			
+			ResultSet rs = pstmt.executeQuery();
+			// 조회하는 값이 하나라면 while대신 if를 써도된다.
+			if(rs.next()) {
+				user = new User();
+				user.setNo(rs.getInt("user_no"));
+				user.setId(rs.getString("user_name"));
+				user.setPassword(rs.getString("user_password"));
+				user.setName(rs.getString("user_name"));
+				user.setPoint(rs.getInt("user_point"));
+				user.setCreateDate(rs.getDate("user_create_date"));
+			}
+			return user; 
+			
+		} catch (SQLException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+	
 	/*
 	 * 사용자정보 조회하기 - SELECT 작업
 	 * 

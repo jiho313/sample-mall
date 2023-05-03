@@ -1,10 +1,16 @@
 package controller;
 
+import java.util.List;
+
+import dto.CartItemDto;
+import dto.CartItemListDto;
 import service.CartService;
 import service.OrderService;
 import service.ProductService;
 import service.UserService;
 import util.KeyboardReader;
+import vo.CartItem;
+import vo.Product;
 import vo.User;
 
 public class MallController {
@@ -237,31 +243,103 @@ public class MallController {
 	
 	private void 상품조회() {
 		System.out.println("<< 상품조회 >>");
+		System.out.println("### 상품목록을 확인하세요.");
+
+		List<Product> productList = productService.getAllProducts();
 		
+		System.out.println("---------------------------------------------------");
+		System.out.println("번호\t상품가격\t재고수량\t상품명");
+		System.out.println("---------------------------------------------------");
+		for (Product product : productList) {
+			System.out.print(product.getNo()+"\t");
+			System.out.print(product.getPrice()+"\t");
+			System.out.print(product.getStock()+"\t");
+			System.out.println(product.getName());
+		}
+		
+		System.out.println("---------------------------------------------------");
+	
 	}
 	
 	private void 장바구니보기() {
 		System.out.println("<< 장바구니 보기 >>");
+		System.out.println("### 장바구니 아이템을 확인하세요.");
 		
+		CartItemListDto listDto = cartService.getMyCartItems(loginUser.getNo());
+		
+		List<CartItemDto> dtos = listDto.getDtos();
+		if(dtos.isEmpty()) {
+			System.out.println("### 장바구니가 비어있습니다.");
+		} else {
+			System.out.println("---------------------------------------------------");
+			System.out.println("상품번호\t상품가격\t담은수량\t구매가격\t상품명");
+			System.out.println("---------------------------------------------------");
+			for (CartItemDto dto : dtos) {
+				System.out.print(dto.getProductNo()+"\t");
+				System.out.print(dto.getProductPrice()+"\t");
+				System.out.print(dto.getItemAmount()+"\t");
+				System.out.print(dto.getProductPrice()*dto.getItemAmount()+"\t");
+				System.out.println(dto.getProductName());
+			}
+			
+			System.out.println("---------------------------------------------------");
+			System.out.println();
+		
+			System.out.println("---------------------------------------------------");
+			System.out.println("총 구매수량: " + listDto.getTotalAmount());
+			System.out.println("총 구매가격: " + listDto.getTotalOrderPrice());
+			System.out.println("---------------------------------------------------");
+		}
 	}
 	
 	private void 장바구니담기() {
 		System.out.println("<< 장바구니 담기 >>");
+		System.out.println("### 상품번호, 상품수량을 입력하세요.");
 		
+		System.out.print("#### 상품번호 입력: ");
+		int productNo = reader.readInt();
+		System.out.print("### 상품수량 입력: ");
+		int productAmount = reader.readInt();
+		
+		CartItem cartItem = new CartItem();
+		cartItem.setUserNo(loginUser.getNo());
+		cartItem.setProductNo(productNo);
+		cartItem.setAmount(productAmount);
+		
+		cartService.addCartItem(cartItem);
+		
+		System.out.println("### 장바구니에 상품이 추가되었습니다.");
 	}
 	
 	private void 장바구니비우기() {
 		System.out.println("<< 장바구니 비우기 >>");
 		
+		cartService.clearMyCartItems(loginUser.getNo());
+		
+		System.out.println("### 장바구니에 저장된 모든 상품정보가 삭제되었습니다.");
+		
 	}
 	
 	private void 장바구니에서구매하기() {
-		System.out.println("<<  >>");
+		System.out.println("<< 장바구니에서 구매하기 >>");
 		
 	}
 	
 	private void 바로구매하기() {
 		System.out.println("<< 바로 구매하기 >>");
+		System.out.println("### 상품번호, 구매수량을 입력해서 상품을 구매하세요.");
+		System.out.println();
+		
+		System.out.print("### 상품 번호: ");
+		int productNo = reader.readInt();
+		System.out.print("### 구매 수량: ");
+		int amount = reader.readInt();
+		System.out.println();
+		
+		orderService.order(productNo, amount, loginUser.getNo());
+		
+		System.out.println("주문이 완료되었습니다.");
+		
 		
 	}
 	
