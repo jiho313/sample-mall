@@ -82,7 +82,7 @@ public class UserService {
 	 * 		- 1번에서 조회된 사용자 정보를 반환한다.
 	 * 
 	 */
-	public User gerUserDetail(String userId) {
+	public User getUserDetail(String userId) {
 		User savedUser = userDao.getUserById(userId);
 		if (savedUser == null) {
 			throw new RuntimeException("사용자 정보가 존재하지 않습니다.");

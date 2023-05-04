@@ -3,12 +3,37 @@ package dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLDataException;
 import java.sql.SQLException;
 
 import util.ConnUtils;
 import vo.User;
 
 public class UserDao {
+	
+	public void updateUser(User user) {
+		String sql = "update sample_users "
+				+ "set "
+				+ "		user_password = ?, "
+				+ "		user_point = ? "
+				+ "where user_no = ? ";
+		try {
+			Connection conn = ConnUtils.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, user.getPassword());
+			pstmt.setInt(2, user.getPoint());
+			pstmt.setInt(3, user.getNo());
+			
+			pstmt.executeUpdate();
+			
+			pstmt.close();
+			conn.close();
+			
+		} catch (SQLException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
 	
 	public User getUserByNo(int userNo) {
 		String sql = "select * "
@@ -56,24 +81,27 @@ public class UserDao {
 			
 			Connection conn = ConnUtils.getConnection();
 			PreparedStatement pstmt = conn.prepareStatement(sql);
-			pstmt.setNString(1, id);
+			pstmt.setString(1, id);
 			
 			ResultSet rs = pstmt.executeQuery();
 			// 조회하는 값이 하나라면 while대신 if를 써도된다.
 			while(rs.next()) {
 				user = new User();
 				user.setNo(rs.getInt("user_no"));
-				user.setId(rs.getString("user_name"));
+				user.setId(rs.getString("user_id"));
 				user.setPassword(rs.getString("user_password"));
 				user.setName(rs.getString("user_name"));
 				user.setPoint(rs.getInt("user_point"));
 				user.setCreateDate(rs.getDate("user_create_date"));
 			}
+			rs.close();
+			pstmt.close();
+			conn.close();
+			
 			return user; 
 		} catch (SQLException ex) {
 			throw new RuntimeException(ex);
 		}
-		
 	}
 
 	/*

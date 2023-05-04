@@ -3,6 +3,7 @@ package dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLDataException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,7 +13,34 @@ import util.ConnUtils;
 import vo.Product;
 
 public class ProductDao {
-	
+	// update문은 하나하나 따로 만들지 말고 변경가능한 모든 데이터(컬럼, 열)을 포함하는 update문을 작성할 것
+	public void updateProduct(Product product) {
+		String sql = "update sample_product "
+				+ "set "
+				+ "		product_price = ?, "
+				+ "		product_discount_rate = ?, "
+				+ "		product_stock = ? "
+				+ "where product_no = ? ";
+		
+		try {
+			Connection conn = ConnUtils.getConnection();
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setInt(1, product.getPrice());
+			pstmt.setDouble(2, product.getDiscountRate());
+			pstmt.setInt(3, product.getStock());
+			pstmt.setInt(4, product.getNo());
+		
+			pstmt.executeUpdate();
+			
+			pstmt.close();
+			conn.close();
+			
+		} catch (SQLException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+
 	public Product getProductByNo(int productNo) {
 		String sql = "select * "
 				+ "from sample_product "

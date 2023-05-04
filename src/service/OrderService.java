@@ -1,10 +1,14 @@
 package service;
 
+import java.util.List;
+
 import dao.OrderDao;
 import dao.OrderItemDao;
 import dao.PointHistoryDao;
 import dao.ProductDao;
 import dao.UserDao;
+import dto.OrderDetailDto;
+import dto.OrderItemDto;
 import vo.Order;
 import vo.OrderItem;
 import vo.PointHistory;
@@ -17,7 +21,24 @@ public class OrderService {
 	private OrderDao orderDao = new OrderDao();
 	private OrderItemDao orderItemDao = new OrderItemDao();
 	private UserDao userDao = new UserDao();
-
+	
+	/*
+	 * 나의 주문내역 조회 서비스를 제공한다.
+	 * 
+	 * 반환타입: List<Order> 
+	 * 메서드명: getMyOrders
+	 * 매개변수: int userNo
+	 * 업무로직
+	 * 	- 전달받은 사용자번호에 해당하는 사용자의 주문내역정보를 제공한다.
+	 * 	- 1. 주문내역정보 조회하고 반환하기
+	 * 		- OrderDao객체의 getOrdersByUserNo()메서드를 호출해서
+	 * 		  사용자번호에 해당하는 주문내역정보를 조회하고, 반환한다.
+	 */
+	public List<Order> getMyOrder(int userNo){
+		return orderDao.getOrdersByUserNo(userNo);
+	}
+	
+	
 	/*
 	 * 바로구매 서비스를 제공한다.
 	 *
@@ -94,6 +115,66 @@ public class OrderService {
 		
 		pointHistoryDao.insertHistory(history);
 		
+		// 상품의 재고수량 변경하기
+		product.setStock(product.getStock() - amount);
+		productDao.updateProduct(product);
+		
+		// 사용자의 포인트를 변경하기
+		user.setPoint(user.getPoint() + depositPoint);
+		userDao.updateUser(user);
 	}
-
+	
+		/*
+		 * 주문상세정보를 제공하는 서비스
+		 * 
+		 * 반환타입: OrderDetailDto
+		 * 메서드명: getOrderDetail
+		 * 매개변수: int orderNo
+		 * 업무로직
+		 * 	- 주문번호에 해당하는 주문상세정보(주문정ㅂ + 주문상품정보)를 조회해서 반환한다.
+		 * 	- 1. 주문정보를 조회한다.
+		 * 		- OrderDao객체의 getOrderByNo()를 호출해서 주문번호에 해당하는 주문정보를 조회한다.
+		 * 	- 2. 주문상품정보를 조회한다.
+		 * 		- OrderItemDao객체의 getOrderItemDtos()를 호출해서 주문번호에 해당하는 
+		 * 		  주문상품정보를 전부 조회한다.
+		 * 	- 3. OrderDetailDto객체를 반환한다.
+		 * 		- OrderDetailDto객체의 생성한다.
+		 * 		- OrderDetailDto객체의 멤버변수에 각각 주문정보와 주문상품정보를 저장하고 반환한다.
+		 */
+		public OrderDetailDto getOrderDetail(int orderNo, int userNo) {
+			
+			Order order = orderDao.gerOrderByNo(orderNo);
+			if (order == null) {
+				throw new RuntimeException("주문정보가 존재하지 않습니다.");
+			}
+			
+			if (order.getUserNo() != userNo) {
+				throw new RuntimeException("다른 사용자의 주문정보는 조회할 수 없습니다.");
+			}
+			
+			List<OrderItemDto> items = orderItemDao.getOrderItemDtosByOrderNo(orderNo);
+			
+			OrderDetailDto dto = new OrderDetailDto();
+			dto.setOrder(order);
+			dto.setItems(items);
+			
+			return dto;
+		}
+		
+		/*
+		 * 포인트 변경 이력을 제공하는 서비스다.
+		 * 
+		 * 반환타입: Lost<PointHistory>
+		 * 메서드명: getMyPointHistories
+		 * 매개변수: int userNo
+		 * 업무로직
+		 * 	- 전달받은 사용자 번호에 조회된 포인트 변경 이력정보를 반환한다
+		 * 	- 1. 포인트 변경이력정보 조회하기
+		 * 		- PointHistoryDao의 getPointHistoresByUserNo() 메서드를 호출해서
+		 * 		  사용자의 포인트변경이력정보를 조회하고, 반환한다.
+		 */
+		public List<PointHistory> getMyPointHistores(int userNo) {
+			return pointHistoryDao.getHistoryByUserNo(userNo);
+			
+		}
 }
