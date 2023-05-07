@@ -25,7 +25,7 @@ public class MallController {
 	private OrderService orderService = new OrderService();
 	private ProductService productService = new ProductService();
 	private UserService userService = new UserService();
-
+	// 수정 테스트
 	// 인증된 사용자정보가 저장된다.(loginUser가 null이 아니면 현재 로그인된 상태다.)
 	private LoginUser loginUser = null;
 
