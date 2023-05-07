@@ -165,7 +165,6 @@ public class CartService {
 		PointHistory history = new PointHistory();
 		history.setUserNo(userNo);
 		history.setOrderNo(orderNo);
-		history.setUserNo(userNo);
 		history.setDepositPoint(depositPoint);
 		history.setCurrentPoint(user.getPoint());
 		

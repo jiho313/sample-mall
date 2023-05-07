@@ -21,6 +21,7 @@ public class CartItemDao {
 	 * 메서드명: getCartItemDtosByUserNo
 	 * 매개변수: int userNo
 	 */
+	// 조인해서 얻을 수 있는 값을 저장할 땐 별도의 dto클래스 생성 후 값 저장
 	public List<CartItemDto> getCartItemDtosByUserNo (int userNo){
 		String sql = "select c.product_no, p.product_price, c.item_amount, p.product_name "
 				+ "from sample_cart_items c, sample_product p "
